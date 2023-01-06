@@ -4,46 +4,18 @@ plugins {
 
 
 apply plugin: 'java-library'
-//apply plugin: 'maven'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 group 'de.inetsoftware'
 archivesBaseName = 'jwebassembly-gradle'
 version = '0.4'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
-//ext.artifactBaseName = rootProject.name
 
 dependencies {
-    api gradleApi()
+    compile gradleApi()
 }
 
-task sourcesJar(type: Jar) {
-   archiveBaseName=archivesBaseName
-   classifier 'sources'
-   from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-   archiveBaseName=archivesBaseName
-   classifier 'javadoc'
-   from javadoc.destinationDir
-}
-
-publishing {
-    publications {
-        plugin(MavenPublication) {
-            from components.java
-
-            artifactId archivesBaseName
-
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
-}
-
-/*
 sourceSets {
     main {
         java {
@@ -54,7 +26,6 @@ sourceSets {
         }
     }
 }
-*/
 
 uploadArchives {
     repositories {

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+//import javax.validation.constraints.NonNull;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;

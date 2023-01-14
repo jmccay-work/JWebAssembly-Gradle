@@ -1,24 +1,37 @@
-plugins {
-//  id "com.gradle.plugin-publish" version "0.20.0"
-  id "com.gradle.plugin-publish" version "1.1.0"
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.21.0"
+    }
 }
 
-
-apply plugin: 'java-library'
-//apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-
+plugins {
+    id "com.gradle.plugin-publish" version "0.21.0"
+    id 'java'
+    id 'maven-publish'
+    id 'java-library'
+}
 
 group 'de.inetsoftware'
 archivesBaseName = 'jwebassembly-gradle'
 version = '0.4'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
-//ext.artifactBaseName = rootProject.name
 
-dependencies {
-    api gradleApi()
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src"]
+        }
+    }
+}
+
+configurations {
+  //declaring new configuration that will be used to associate with artifacts
+  schema
 }
 
 task sourcesJar(type: Jar) {
@@ -33,8 +46,41 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
    from javadoc.destinationDir
 }
 
+artifacts {
+    schema sourcesJar
+    schema javadocJar
+}
+
 publishing {
+    repositories {
+        maven {
+            name = "repo"
+            url = uri('../repo')
+            def releasesRepoUrl = uri('../repo')
+            def snapshotsRepoUrl = uri('../repo')
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+		maven {
+			name = "qedCloudsmith"
+			url = "https://maven.cloudsmith.io/queues-enforth-development-inc/aes-internal/"
+			def releasesRepoUrl = "https://maven.cloudsmith.io/queues-enforth-development-inc/aes-internal/"
+			def snapshotsRepoUrl = "https://maven.cloudsmith.io/queues-enforth-development-inc/aes-internal/"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			credentials {
+				username = '$repositoryUser'
+				password = '$cloudsmithApiKey'
+			}
+		}
+    }
     publications {
+        repoPublication(MavenPublication) {
+            from components.java
+
+            artifactId archivesBaseName
+
+            artifact sourcesJar
+            artifact javadocJar
+        }
         plugin(MavenPublication) {
             from components.java
 
@@ -43,27 +89,10 @@ publishing {
             artifact sourcesJar
             artifact javadocJar
         }
-    }
-}
-
-/*
-sourceSets {
-    main {
-        java {
-            srcDir 'src'
-        }
-        resources {
-            srcDir 'src'
-        }
-    }
-}
-*/
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('../repo'))
-        }
+		qedCloudsmith(MavenPublication) {
+			artifact sourcesJar
+			artifact javadocJar
+		}
     }
 }
 
@@ -90,21 +119,12 @@ pluginBundle {
     website = 'https://github.com/i-net-software/JWebAssembly-Gradle'
     vcsUrl = 'https://github.com/i-net-software/JWebAssembly-Gradle'
     description = 'A Gradle plugin for the JWebAssembly compiler. A Java bytecode to WebAssembly converter. It produce the WASM and JavaScript file from your *.java, *.class and/or *.jar files.'
-//    tags = ['jwebassembly', 'webassembly', 'wasm', 'java', 'bytecode', 'compile', 'converter', 'transpiler' ]
-}
-
-gradlePlugin {
-
-//    website = 'https://github.com/i-net-software/JWebAssembly-Gradle'
-//    vcsUrl = 'https://github.com/i-net-software/JWebAssembly-Gradle'
-//    description = 'A Gradle plugin for the JWebAssembly compiler. A Java bytecode to WebAssembly converter. It produce the WASM and JavaScript file from your *.java, *.class and/or *.jar files.'
-//    tags = ['jwebassembly', 'webassembly', 'wasm', 'java', 'bytecode', 'compile', 'converter', 'transpiler' ]
+    tags = ['jwebassembly', 'webassembly', 'wasm', 'java', 'bytecode', 'compile', 'converter', 'transpiler' ]
 
     plugins {
         jwebassemblerPlugin {
             id = 'de.inetsoftware.jwebassembly'
             displayName = 'Gradle JWebAssembly plugin'
-//            tags = ['jwebassembly', 'webassembly', 'wasm', 'java', 'bytecode', 'compile', 'converter', 'transpiler' ]
         }
     }
     mavenCoordinates {

@@ -1,9 +1,10 @@
 plugins {
-  id "com.gradle.plugin-publish" version "0.21.0"
-  id 'java-library'
-  id 'maven'
-  id 'maven-publish'
+  id "com.gradle.plugin-publish" version "0.20.0"
 }
+
+
+apply plugin: 'java-library'
+apply plugin: 'maven'
 
 group 'de.inetsoftware'
 archivesBaseName = 'jwebassembly-gradle'
@@ -25,54 +26,6 @@ sourceSets {
         }
     }
 }
-
-task sourcesJar(type: Jar) {
-   archiveBaseName=archivesBaseName
-   classifier 'sources'
-   from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-   archiveBaseName=archivesBaseName
-   classifier 'javadoc'
-   from javadoc.destinationDir
-}
-
-task copyToRepo(type: Copy) {
-    from '$buildDir/lib'
-    into '../repo'
-}
-
-task doLast {
-    copyToRepo
-}
-
-artifacts{
-    archives sourcesJar
-    archives javadocJar
-} 
-
-publishing {
-    publications {
-        release(MavenPublication) {
-            from components.java
-            
-            artifactId archivesBaseName
-            
-            artifact sourcesJar
-            artifact javadocJar
-        }
-        
-    }
-    
-    repositories {
-        mavenLocal()
-        
-    }
-    
-}
-
-
 
 uploadArchives {
     repositories {

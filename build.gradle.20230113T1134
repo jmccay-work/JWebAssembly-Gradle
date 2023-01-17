@@ -5,12 +5,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.21.0"
+        classpath "com.gradle.publish:plugin-publish-plugin:0.20.0"
     }
 }
 
 plugins {
-//    id "com.gradle.plugin-publish" version "0.21.0"
+//    id "com.gradle.plugin-publish" version "0.20.0"
     id 'java'
     id 'maven-publish'
     id 'java-library'
@@ -31,7 +31,7 @@ targetCompatibility = "1.8"
 
 dependencies {
     // https://mvnrepository.com/artifact/com.gradle.publish/plugin-publish-plugin
-    implementation 'com.gradle.publish:plugin-publish-plugin:0.21.0'
+    implementation 'com.gradle.publish:plugin-publish-plugin:0.20.0'
     compile gradleApi()
 }
 

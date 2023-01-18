@@ -44,7 +44,13 @@ task copyToRepo(type: Copy) {
 }
 
 task doLast {
-    copyToRepo
+//    copyToRepo
+}
+
+tasks.withType(PublishToMavenRepository) {
+    doFirst {
+        println("De coolone is Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
+    }
 }
 
 artifacts{
@@ -65,9 +71,26 @@ publishing {
         
     }
     
+    t {
+        
+    }
+    
     repositories {
+        // Publish to the local maven cache directory (%USERPROFILE%\.m2\repository)
         mavenLocal()
         
+        // Store the entire generated libraries to a directory named by the project name
+        // in the directory specified in the localRepositoryLocation property in the 
+        // gradle properties file in the root directory.
+        maven {
+            name 'local'
+            url "$localRepositoryLocation/$project.name"
+        }
+        
+        maven {
+            name 'qedInternalCloudsmith'
+            
+        }
     }
     
 }

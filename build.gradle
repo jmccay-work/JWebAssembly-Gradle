@@ -30,7 +30,6 @@ version = '0.4'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
-println("The appendix: $theAppendix")
 
 jar {
     archiveAppendix.set("$theAppendix")
@@ -45,9 +44,6 @@ sourceSets {
         java {
             srcDir 'src'
         }
-//        resources {
-//            srcDir 'src'
-//        }
     }
 }
 
@@ -99,7 +95,6 @@ publishing {
         if (project.hasProperty('localRepositoryLocation') && localRepositoryLocation.length() > 0) {
             maven {
                 name 'local'
-    //            url "$localRepositoryLocation/$project.name"
                 url String.format("%s/%s", localRepositoryLocation, archivePreferredName)
             }
         }

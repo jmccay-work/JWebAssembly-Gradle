@@ -45,9 +45,9 @@ sourceSets {
         java {
             srcDir 'src'
         }
-        resources {
-            srcDir 'src'
-        }
+//        resources {
+//            srcDir 'src'
+//        }
     }
 }
 

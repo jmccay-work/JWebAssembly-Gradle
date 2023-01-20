@@ -26,9 +26,9 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
-//import javax.validation.constraints.NonNull;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -131,7 +131,7 @@ class WasmCompiler {
                             break;
                     }
                 }
-                wasmLogger.fine( "\tcompiler: " + urls );
+                wasmLogger.log(Level.FINE, "\tcompiler: {0}", urls);
             } catch( NoSuchFieldException e ) {
                 // ignore, method does not exist in version 0.1 of the compiler
             }
@@ -167,7 +167,7 @@ class WasmCompiler {
             task.getLogger().debug( "add file: " + file );
         } catch( InvocationTargetException ex ) {
             throw new TaskExecutionException( task, ex.getTargetException() );
-        } catch( Exception ex ) {
+        } catch( IllegalAccessException | IllegalArgumentException ex ) {
             throw new TaskExecutionException( task, ex );
         }
     }
@@ -186,7 +186,7 @@ class WasmCompiler {
             }
         } catch( InvocationTargetException ex ) {
             throw new TaskExecutionException( task, ex.getTargetException() );
-        } catch( Exception ex ) {
+        } catch( IllegalAccessException | IllegalArgumentException ex ) {
             throw new TaskExecutionException( task, ex );
         }
     }
@@ -213,7 +213,7 @@ class WasmCompiler {
             String msg = "WasmException".equals( targetException.getClass().getSimpleName() ) ? targetException.getMessage() : targetException.toString();
             task.getLogger().error( "> WASM compile failed with: " + msg );
             throw new TaskExecutionException( task, targetException );
-        } catch( Exception ex ) {
+        } catch( IOException | IllegalAccessException | IllegalArgumentException ex ) {
             throw new TaskExecutionException( task, ex );
         } finally {
             if( classLoader != null ) {

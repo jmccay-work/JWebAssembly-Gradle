@@ -1,18 +1,43 @@
 plugins {
   id "com.gradle.plugin-publish" version "0.21.0"
   id 'java-library'
-  id 'maven'
   id 'maven-publish'
+}
+
+// Allow people to developers who build their own to put in a private/company script to
+// load the custom maven publishing repository
+// Set localRepositoryScript in gradle.properties.
+if (project.hasProperty('localRepositoryScript') && localRepositoryScript.length() > 0) {
+    File repScript = new File("$localRepositoryScript")
+    if (repScript.exists()) {
+        apply from: "$localRepositoryScript"
+    }
 }
 
 group 'de.inetsoftware'
 archivesBaseName = 'jwebassembly-gradle'
+String archivePreferredName = null;
+
+//
+// Allow a developer building their own version the ability to add their own appendix.
+// Set theAppendix in gradle.properties in the root directory.
+if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
+    archivePreferredName = String.format("%s-%s", archivesBaseName, "$theAppendix")
+} else {
+    archivePreferredName = archivesBaseName
+}
 version = '0.4'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+println("The appendix: $theAppendix")
+
+jar {
+    archiveAppendix.set("$theAppendix")
+}
+
 dependencies {
-    compile gradleApi()
+    api gradleApi()
 }
 
 sourceSets {
@@ -28,28 +53,21 @@ sourceSets {
 
 task sourcesJar(type: Jar) {
    archiveBaseName=archivesBaseName
+   archiveAppendix.set("$theAppendix")
    classifier 'sources'
    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
    archiveBaseName=archivesBaseName
+   archiveAppendix.set("$theAppendix")
    classifier 'javadoc'
    from javadoc.destinationDir
 }
 
-task copyToRepo(type: Copy) {
-    from '$buildDir/lib'
-    into '../repo'
-}
-
-task doLast {
-//    copyToRepo
-}
-
 tasks.withType(PublishToMavenRepository) {
     doFirst {
-        println("De coolone is Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
+        println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
     }
 }
 
@@ -63,15 +81,11 @@ publishing {
         release(MavenPublication) {
             from components.java
             
-            artifactId archivesBaseName
+            artifactId archivePreferredName
             
-            artifact sourcesJar
-            artifact javadocJar
+            artifact(tasks.named("sourcesJar").get())
+            artifact(tasks.named("javadocJar").get())
         }
-        
-    }
-    
-    t {
         
     }
     
@@ -82,27 +96,16 @@ publishing {
         // Store the entire generated libraries to a directory named by the project name
         // in the directory specified in the localRepositoryLocation property in the 
         // gradle properties file in the root directory.
-        maven {
-            name 'local'
-            url "$localRepositoryLocation/$project.name"
+        if (project.hasProperty('localRepositoryLocation') && localRepositoryLocation.length() > 0) {
+            maven {
+                name 'local'
+    //            url "$localRepositoryLocation/$project.name"
+                url String.format("%s/%s", localRepositoryLocation, archivePreferredName)
+            }
         }
         
-        maven {
-            name 'qedInternalCloudsmith'
-            
-        }
     }
     
-}
-
-
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('../repo'))
-        }
-    }
 }
 
 // add the source codes for Eclipse for gradleApi(). You need to use a gradle distribution with "-all" like https://services.gradle.org/distributions/gradle-4.3-all.zip
@@ -138,6 +141,6 @@ pluginBundle {
         }
     }
     mavenCoordinates {
-        artifactId = archivesBaseName
+        artifactId = archivePreferredName
     }
 }

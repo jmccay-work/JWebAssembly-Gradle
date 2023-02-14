@@ -26,7 +26,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.1'
+version = '0.4.2'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -36,7 +36,8 @@ jar {
 }
 
 dependencies {
-    api gradleApi()
+    // see https://docs.gradle.org/6.8.2/dsl/org.gradle.api.artifacts.dsl.DependencyHandler.html
+    api gradleApi() //api replaces implementation in depencies
 }
 
 sourceSets {
@@ -45,6 +46,11 @@ sourceSets {
             srcDir 'src'
         }
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+    options.compilerArgs += ['-Xlint:deprecation']
 }
 
 task sourcesJar(type: Jar) {

@@ -70,7 +70,7 @@ class WasmCompiler {
     WasmCompiler( WasmTask task ) {
         this.task = task;
         try {
-            instance = getCompilerClass( task ).newInstance();
+            instance = getCompilerClass( task ).getDeclaredConstructor().newInstance();//.newInstance();
         } catch( Exception ex ) {
             throw new TaskExecutionException( task, ex );
         }

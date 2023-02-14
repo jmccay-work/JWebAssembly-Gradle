@@ -1,8 +1,11 @@
+//https://ant.apache.org/manual/api/org/apache/tools/ant/taskdefs/condition/Os.html
+import org.apache.tools.ant.taskdefs.condition.Os 
 plugins {
   id "com.gradle.plugin-publish" version "0.21.0"
   id 'java-library'
   id 'maven-publish'
 }
+
 
 // Allow people to developers who build their own to put in a private/company script to
 // load the custom maven publishing repository
@@ -26,7 +29,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.2'
+version = '0.4.3'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -48,6 +51,20 @@ sourceSets {
     }
 }
 
+// source: https://stackoverflow.com/questions/11235614/how-to-detect-the-current-os-from-gradle
+// needs: import org.apache.tools.ant.taskdefs.condition.Os
+// check the OS type
+task checkWin() {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        println "*** Windows "
+    } else if (Os.isFamily(Os.FAMILY_MAC)) {
+        println "*** Mac "
+    } else if ( Os.isFamily(Os.FAMILY_UNIX) ) {
+        println "*** Unix "
+    }
+}
+
+// task to list dprecated stuff in the compile
 tasks.withType(JavaCompile) {
     options.deprecation = true
     options.compilerArgs += ['-Xlint:deprecation']

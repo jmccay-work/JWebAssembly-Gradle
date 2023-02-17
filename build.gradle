@@ -29,7 +29,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.4'
+version = '0.4.5'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -54,7 +54,7 @@ sourceSets {
 // source: https://stackoverflow.com/questions/11235614/how-to-detect-the-current-os-from-gradle
 // needs: import org.apache.tools.ant.taskdefs.condition.Os
 // check the OS type
-task checkOS() {
+tasks.register("checkOS") {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         println "*** Windows OS"
     } else if (Os.isFamily(Os.FAMILY_MAC)) {
@@ -71,6 +71,7 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
     options.compilerArgs += ['-Xlint:deprecation']
 }
+
 
 task sourcesJar(type: Jar) {
    archiveBaseName=archivesBaseName
@@ -164,15 +165,3 @@ pluginBundle {
         artifactId = archivePreferredName
     }
 }
-
-tasks.register("allQedPublishing") {
-//    dependsOn tasks.publishToMavenLocal
-//    dependsOn tasks.publishReleasePublicationToCloudsmithRepository
-    System.out.println("QED Publishing to MavanLocal and Cloudsmith repositories.")
-    tasks.getByName("publishToMavenLocal").execute()
-}
-
-tasks.getByName("allQedPublishing").enabled = false;
-
-
-

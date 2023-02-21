@@ -29,7 +29,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.5'
+version = '0.4.6'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -112,7 +112,6 @@ publishing {
     }
     
     repositories {
-        // Publish to the local maven cache directory (%USERPROFILE%\.m2\repository)
         mavenLocal()
         
         // Store the entire generated libraries to a directory named by the project name
@@ -121,7 +120,8 @@ publishing {
         if (project.hasProperty('localRepositoryLocation') && localRepositoryLocation.length() > 0) {
             maven {
                 name 'local'
-                url String.format("%s/%s", localRepositoryLocation, archivePreferredName)
+                url String.format("%s", localRepositoryLocation)
+//                url String.format("%s/%s", localRepositoryLocation, archivePreferredName)
             }
         }
         
@@ -165,3 +165,4 @@ pluginBundle {
         artifactId = archivePreferredName
     }
 }
+

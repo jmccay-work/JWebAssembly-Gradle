@@ -29,7 +29,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.8'
+version = '0.4.0009'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -47,6 +47,9 @@ sourceSets {
     main {
         java {
             srcDir 'src'
+        }
+        resources {
+            srcDirs = ['src/META-INF']
         }
     }
 }

@@ -118,17 +118,6 @@ publishing {
     
     repositories {
         mavenLocal()
-/* moved to local gradle script        
-        // Store the entire generated libraries to a directory named by the project name
-        // in the directory specified in the localRepositoryLocation property in the 
-        // gradle properties file in the root directory.
-        if (project.hasProperty('localRepositoryLocation') && project.localRepositoryLocation.length() > 0) {
-            maven {
-                name 'local'
-                url String.format("%s", localRepositoryLocation)
-            }
-        }
-*/        
     }
     
 }

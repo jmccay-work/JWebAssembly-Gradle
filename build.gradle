@@ -29,7 +29,7 @@ if (project.hasProperty('theAppendix') && theAppendix.length() > 0) {
 } else {
     archivePreferredName = archivesBaseName
 }
-version = '0.4.0009'
+version = '0.4.0010'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -46,13 +46,15 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src'
+            srcDirs =  ['src/java']
         }
         resources {
-            srcDirs = ['src/META-INF']
+            srcDirs = ['src/resources']
         }
     }
 }
+
+
 
 // source: https://stackoverflow.com/questions/11235614/how-to-detect-the-current-os-from-gradle
 // needs: import org.apache.tools.ant.taskdefs.condition.Os

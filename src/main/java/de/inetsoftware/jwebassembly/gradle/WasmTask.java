@@ -20,13 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.file.CopyActionProcessingStreamAction;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.tasks.CompileClasspath;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.WorkResults;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
@@ -48,6 +46,7 @@ public class WasmTask extends AbstractArchiveTask {
     /**
      * Create instance and set initial values.
      */
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public WasmTask() {
         setFormat( OutputFormat.Binary );
     }
@@ -203,28 +202,19 @@ public class WasmTask extends AbstractArchiveTask {
     protected CopyAction createCopyAction() {
         WasmCompiler compiler = new WasmCompiler( this );
 
-        return new CopyAction() {
-
-            @Override
-            public WorkResult execute( CopyActionProcessingStream stream ) {
-                stream.process( new CopyActionProcessingStreamAction() {
-
-                    @Override
-                    public void processFile( FileCopyDetailsInternal details ) {
-                        if( !details.isDirectory() ) {
-                            compiler.addFile( details.getFile() );
-                        }
-                    }
-
-                } );
-
-                for( File file : getClasspath().getFiles() ) {
-                    compiler.addLibrary( file );
+        return (CopyActionProcessingStream stream) -> {
+            stream.process((FileCopyDetailsInternal details) -> {
+                if( !details.isDirectory() ) {
+                    compiler.addFile( details.getFile() );
                 }
-
-                compiler.compile();
-                return WorkResults.didWork( true );
+            });
+            
+            for( File file : getClasspath().getFiles() ) {
+                compiler.addLibrary( file );
             }
+            
+            compiler.compile();
+            return WorkResults.didWork( true );
         };
     }
 }
